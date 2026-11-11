@@ -31,8 +31,10 @@ import {
   QUOTA_PAGE_SIZE,
   QUOTA_SORT_MODES,
   QUOTA_TAB_ORDER,
+  QUOTA_VIEW_MODES,
   type QuotaSortMode,
   type QuotaTabId,
+  type QuotaViewMode,
 } from './constants';
 import {
   buildTabCounts,
@@ -47,6 +49,7 @@ import {
 import { nextRecoveryMs } from './resetSchedule';
 import { QUOTA_ADAPTERS, getQuotaSetter, type QuotaCardState } from './providers';
 import type { QuotaProviderType } from './providers/types';
+import { ClaudeLedger } from './providers/claude/ClaudeLedger';
 import { useDevinQuotaAutoLoad } from './providers/devin/useDevinQuotaAutoLoad';
 import { useQuotaActions } from './hooks/useQuotaActions';
 import { useQuotaBatchLoader } from './hooks/useQuotaBatchLoader';
@@ -74,6 +77,7 @@ export function QuotaPage() {
   const [sortMode, setSortMode] = useState<QuotaSortMode>(
     () => readQuotaUiState()?.sortMode ?? 'default'
   );
+  const [view, setView] = useState<QuotaViewMode>(() => readQuotaUiState()?.view ?? 'ledger');
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -210,6 +214,28 @@ export function QuotaPage() {
     writeQuotaUiState({ sortMode: next as QuotaSortMode });
   }, []);
 
+  const handleViewChange = useCallback((next: string) => {
+    setView(next as QuotaViewMode);
+    writeQuotaUiState({ view: next as QuotaViewMode });
+  }, []);
+
+  const viewOptions = useMemo(
+    () =>
+      QUOTA_VIEW_MODES.map((mode) => ({ value: mode, label: t(`quota_management.view_${mode}`) })),
+    [t]
+  );
+
+  // The ledger replaces Claude cards only; other providers keep the grid below it.
+  const hasClaudeEntries = filteredEntries.some((entry) => entry.type === 'claude');
+  const ledgerEntries = useMemo(
+    () => (view === 'ledger' ? pageItems.filter((entry) => entry.type === 'claude') : []),
+    [pageItems, view]
+  );
+  const gridItems = useMemo(
+    () => (view === 'ledger' ? pageItems.filter((entry) => entry.type !== 'claude') : pageItems),
+    [pageItems, view]
+  );
+
   const sortOptions = useMemo(
     () =>
       QUOTA_SORT_MODES.map((mode) => ({ value: mode, label: t(`quota_management.sort_${mode}`) })),
@@ -307,7 +333,7 @@ export function QuotaPage() {
    * 拿到 null —— 不重播。 */
 
   const [cardsAnimated, setCardsAnimated] = useState(false);
-  const enableCardEntrance = !cardsAnimated && !loading && pageItems.length > 0;
+  const enableCardEntrance = !cardsAnimated && !loading && gridItems.length > 0;
   useEffect(() => {
     if (enableCardEntrance) {
       setCardsAnimated(true);
@@ -315,8 +341,8 @@ export function QuotaPage() {
   }, [enableCardEntrance]);
   const cardEntranceDelay = (index: number): number | null => {
     if (!enableCardEntrance) return null;
-    if (pageItems.length <= 1) return 0;
-    return Math.round((index / (pageItems.length - 1)) * CARD_ENTRANCE_BUDGET_MS);
+    if (gridItems.length <= 1) return 0;
+    return Math.round((index / (gridItems.length - 1)) * CARD_ENTRANCE_BUDGET_MS);
   };
 
   /* ---------- 渲染 ---------- */
@@ -373,14 +399,27 @@ export function QuotaPage() {
               </button>
             )}
           </div>
-          <div className={styles.sort}>
-            <Select
-              value={sortMode}
-              options={sortOptions}
-              onChange={handleSortModeChange}
-              ariaLabel={t('quota_management.sort_label')}
-              size="sm"
-            />
+          <div className={styles.controls}>
+            {hasClaudeEntries && (
+              <div className={styles.sort}>
+                <Select
+                  value={view}
+                  options={viewOptions}
+                  onChange={handleViewChange}
+                  ariaLabel={t('quota_management.view_label')}
+                  size="sm"
+                />
+              </div>
+            )}
+            <div className={styles.sort}>
+              <Select
+                value={sortMode}
+                options={sortOptions}
+                onChange={handleSortModeChange}
+                ariaLabel={t('quota_management.sort_label')}
+                size="sm"
+              />
+            </div>
           </div>
         </div>
 
@@ -425,21 +464,35 @@ export function QuotaPage() {
             }
           />
         ) : (
-          <div className={styles.grid}>
-            {pageItems.map((entry, index) => (
-              <QuotaCard
-                key={`${entry.type}:${getQuotaCacheKey(entry.file)}`}
-                entry={entry}
-                quota={getQuota(entry)}
+          <>
+            {ledgerEntries.length > 0 && (
+              <ClaudeLedger
+                entries={ledgerEntries}
+                quotaFor={(entry) => claudeQuota[getQuotaCacheKey(entry.file)]}
                 resolvedTheme={resolvedTheme}
-                canRefresh={canUseActions && !entry.file.disabled}
-                resetting={resettingQuotaName === getQuotaCacheKey(entry.file)}
-                entranceDelayMs={cardEntranceDelay(index)}
-                onRefresh={() => void refreshQuota(entry.file, QUOTA_ADAPTERS[entry.type])}
-                onReset={() => resetQuota(entry.file, QUOTA_ADAPTERS[entry.type])}
+                canUseActions={canUseActions}
+                resettingName={resettingQuotaName}
+                onRefresh={(entry) => void refreshQuota(entry.file, QUOTA_ADAPTERS.claude)}
               />
-            ))}
-          </div>
+            )}
+            {gridItems.length > 0 && (
+              <div className={styles.grid}>
+                {gridItems.map((entry, index) => (
+                  <QuotaCard
+                    key={`${entry.type}:${getQuotaCacheKey(entry.file)}`}
+                    entry={entry}
+                    quota={getQuota(entry)}
+                    resolvedTheme={resolvedTheme}
+                    canRefresh={canUseActions && !entry.file.disabled}
+                    resetting={resettingQuotaName === getQuotaCacheKey(entry.file)}
+                    entranceDelayMs={cardEntranceDelay(index)}
+                    onRefresh={() => void refreshQuota(entry.file, QUOTA_ADAPTERS[entry.type])}
+                    onReset={() => resetQuota(entry.file, QUOTA_ADAPTERS[entry.type])}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
 
         {!loading && filteredEntries.length > QUOTA_PAGE_SIZE && (

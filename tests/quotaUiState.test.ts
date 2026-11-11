@@ -46,9 +46,9 @@ afterAll(() => {
 });
 
 describe('quota ui state', () => {
-  test('round-trips both preferences', () => {
-    writeQuotaUiState({ tab: 'codex', sortMode: 'soonest' });
-    expect(readQuotaUiState()).toEqual({ tab: 'codex', sortMode: 'soonest' });
+  test('round-trips every preference', () => {
+    writeQuotaUiState({ tab: 'codex', sortMode: 'soonest', view: 'cards' });
+    expect(readQuotaUiState()).toEqual({ tab: 'codex', sortMode: 'soonest', view: 'cards' });
   });
 
   test('retains the Devin tab across visits', () => {
@@ -64,8 +64,8 @@ describe('quota ui state', () => {
   });
 
   test('rejects values that are not part of the current contract', () => {
-    storage.setItem(KEY, JSON.stringify({ tab: 'not-a-tab', sortMode: 'by-vibes' }));
-    expect(readQuotaUiState()).toEqual({ tab: undefined, sortMode: undefined });
+    storage.setItem(KEY, JSON.stringify({ tab: 'not-a-tab', sortMode: 'by-vibes', view: 'grid' }));
+    expect(readQuotaUiState()).toEqual({ tab: undefined, sortMode: undefined, view: undefined });
   });
 
   test('survives absent, malformed, and non-object payloads', () => {

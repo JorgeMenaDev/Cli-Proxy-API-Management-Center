@@ -452,6 +452,9 @@ export function IconSidebarQuickStart({ size = 20, ...props }: IconProps) {
   );
 }
 
+/** Lightning bolt; also used for one-shot actions such as Claude's reset. */
+export const IconZap = IconSidebarQuickStart;
+
 export const IconSidebarConfig = IconSlidersHorizontal;
 
 export const IconSidebarPlugins = IconPlug;

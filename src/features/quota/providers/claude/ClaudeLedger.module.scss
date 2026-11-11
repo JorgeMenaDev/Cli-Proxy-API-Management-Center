@@ -1,0 +1,299 @@
+@use '../../../../styles/mixins' as *;
+
+/* ============================================================
+ * Claude Ledger: compact credential table with a pooled headline.
+ * Same paper as the quota cards (14px radius, 1px border, 82% surface).
+ * ============================================================ */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 6px;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.icon {
+  align-self: center;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+  margin-right: 8px;
+}
+
+.pool,
+.nextReset {
+  font-variant-numeric: tabular-nums;
+}
+
+.pool {
+  color: var(--text-primary);
+  margin-right: 8px;
+}
+
+.scroller {
+  overflow-x: auto;
+  min-width: 0;
+}
+
+.table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+
+  th,
+  td {
+    padding: 10px 12px 10px 0;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+  }
+
+  thead th:nth-child(1) {
+    width: 30%;
+  }
+
+  thead th:nth-child(2),
+  thead th:nth-child(3) {
+    width: 22%;
+  }
+
+  thead th:nth-child(5) {
+    width: 84px;
+  }
+
+  tbody tr + tr {
+    border-top: 1px solid var(--border-color);
+  }
+}
+
+.credential {
+  font-weight: 400;
+}
+
+.name {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  @include text-ellipsis;
+}
+
+.muted {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar {
+  display: block;
+  height: 4px;
+  margin: 6px 0 4px;
+  border-radius: $radius-full;
+  background: color-mix(in srgb, var(--text-primary) 10%, transparent);
+  overflow: hidden;
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--text-primary);
+  transition: width var(--dur-hover, 200ms) var(--ease-out-strong, ease-out);
+}
+
+.low {
+  .left {
+    color: var(--amber-text);
+  }
+
+  .barFill {
+    background: var(--amber-color);
+  }
+}
+
+.lowTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
+}
+
+.stateCell {
+  color: var(--text-tertiary);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+}
+
+.error {
+  font-size: 12px;
+  color: var(--danger-color);
+  overflow-wrap: anywhere;
+}
+
+.grants {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grant {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+
+  strong {
+    color: var(--text-primary);
+  }
+}
+
+.expiry {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-tertiary);
+}
+
+.actions {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-hover, 200ms) var(--ease-out-strong, ease-out);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .iconButton:hover:not(:disabled) {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+}
+
+.spinning {
+  animation: ledger-spin 0.8s linear infinite;
+}
+
+@keyframes ledger-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinning {
+    animation: none;
+  }
+
+  .barFill,
+  .iconButton {
+    transition: none;
+  }
+
+  .iconButton:active:not(:disabled) {
+    transform: none;
+  }
+}
