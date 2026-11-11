@@ -1613,7 +1613,7 @@
     "ledger_low": "Düşük",
     "ledger_resets_in": "{{duration}} sonra sıfırlanır",
     "ledger_ago": "{{duration}} önce",
-    "ledger_five_hour": "5 saatlik limit: %{{percent}} kaldı",
+    "ledger_col_five_hour": "5 saatlik limit",
     "ledger_grant_account": "hesap",
     "ledger_grant_model": "model",
     "ledger_grant_expires": "{{duration}} sonra sona erer",

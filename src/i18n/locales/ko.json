@@ -1613,7 +1613,7 @@
     "ledger_low": "부족",
     "ledger_resets_in": "{{duration}} 후 초기화",
     "ledger_ago": "{{duration}} 전",
-    "ledger_five_hour": "5시간 한도: {{percent}}% 남음",
+    "ledger_col_five_hour": "5시간 한도",
     "ledger_grant_account": "계정",
     "ledger_grant_model": "모델",
     "ledger_grant_expires": "{{duration}} 후 만료",

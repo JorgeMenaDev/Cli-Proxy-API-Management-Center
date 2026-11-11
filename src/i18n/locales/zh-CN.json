@@ -1612,7 +1612,7 @@
     "ledger_low": "偏低",
     "ledger_resets_in": "{{duration}}后重置",
     "ledger_ago": "{{duration}}前",
-    "ledger_five_hour": "5 小时限额：剩余 {{percent}}%",
+    "ledger_col_five_hour": "5 小时限额",
     "ledger_grant_account": "账户",
     "ledger_grant_model": "模型",
     "ledger_grant_expires": "{{duration}}后过期",

@@ -1640,7 +1640,7 @@
     "ledger_low": "偏低",
     "ledger_resets_in": "{{duration}}後重設",
     "ledger_ago": "{{duration}}前",
-    "ledger_five_hour": "5 小時限額：剩餘 {{percent}}%",
+    "ledger_col_five_hour": "5 小時限額",
     "ledger_grant_account": "帳戶",
     "ledger_grant_model": "模型",
     "ledger_grant_expires": "{{duration}}後到期",

@@ -89,6 +89,7 @@ export function ClaudeLedger(props: ClaudeLedgerProps) {
           <thead>
             <tr>
               <th scope="col">{t('quota_management.ledger_col_credential')}</th>
+              <th scope="col">{t('quota_management.ledger_col_five_hour')}</th>
               <th scope="col">{t('quota_management.ledger_col_weekly')}</th>
               <th scope="col">{t('quota_management.ledger_col_fable')}</th>
               <th scope="col">{t('quota_management.ledger_col_resets')}</th>
@@ -143,10 +144,6 @@ function ClaudeLedgerRow(props: ClaudeLedgerRowProps) {
   const windows = readLedgerWindows(quota);
   const observedMs = quota?.observedAt ? Date.parse(quota.observedAt) : NaN;
   const grants = summarizeResetGrants(claudeReset.grants, now);
-  const fiveHourTitle =
-    windows.fiveHour?.remaining != null
-      ? t('quota_management.ledger_five_hour', { percent: Math.round(windows.fiveHour.remaining) })
-      : undefined;
   const refreshLabel = t('auth_files.quota_refresh_single');
   const resetLabel = t(`claude_reset.${claudeReset.buttonLabel}`);
 
@@ -166,11 +163,12 @@ function ClaudeLedgerRow(props: ClaudeLedgerRowProps) {
       </th>
       {hasUsage ? (
         <>
-          <LimitCell window={windows.weekly} now={now} title={fiveHourTitle} />
+          <LimitCell window={windows.fiveHour} now={now} />
+          <LimitCell window={windows.weekly} now={now} />
           <LimitCell window={windows.fable} now={now} />
         </>
       ) : (
-        <td colSpan={2} className={styles.stateCell}>
+        <td colSpan={3} className={styles.stateCell}>
           {status === 'idle' ? (
             <button
               type="button"
@@ -250,19 +248,11 @@ function ClaudeLedgerRow(props: ClaudeLedgerRowProps) {
   );
 }
 
-function LimitCell({
-  window,
-  now,
-  title,
-}: {
-  window: LedgerWindow | null;
-  now: number;
-  title?: string;
-}) {
+function LimitCell({ window, now }: { window: LedgerWindow | null; now: number }) {
   const { t } = useTranslation();
   if (!window || window.remaining === null) {
     return (
-      <td title={title}>
+      <td>
         <span className={styles.muted}>—</span>
       </td>
     );
@@ -270,7 +260,7 @@ function LimitCell({
   const low = isLowRemaining(window.remaining);
   const remaining = Math.round(window.remaining);
   return (
-    <td title={title} className={low ? styles.low : undefined}>
+    <td className={low ? styles.low : undefined}>
       <span className={styles.left}>
         {t('quota_management.ledger_left', { percent: remaining })}
         {low && (

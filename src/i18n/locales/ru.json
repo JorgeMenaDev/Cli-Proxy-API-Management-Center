@@ -1616,7 +1616,7 @@
     "ledger_low": "Мало",
     "ledger_resets_in": "Сброс через {{duration}}",
     "ledger_ago": "{{duration}} назад",
-    "ledger_five_hour": "Лимит 5 часов: осталось {{percent}}%",
+    "ledger_col_five_hour": "Лимит 5 часов",
     "ledger_grant_account": "аккаунт",
     "ledger_grant_model": "модель",
     "ledger_grant_expires": "Истекает через {{duration}}",

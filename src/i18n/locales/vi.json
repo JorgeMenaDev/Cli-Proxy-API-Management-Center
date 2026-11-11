@@ -1564,7 +1564,7 @@
     "ledger_low": "Thấp",
     "ledger_resets_in": "Đặt lại sau {{duration}}",
     "ledger_ago": "{{duration}} trước",
-    "ledger_five_hour": "Giới hạn 5 giờ: còn {{percent}}%",
+    "ledger_col_five_hour": "Giới hạn 5 giờ",
     "ledger_grant_account": "tài khoản",
     "ledger_grant_model": "mô hình",
     "ledger_grant_expires": "Hết hạn sau {{duration}}",

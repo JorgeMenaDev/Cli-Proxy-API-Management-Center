@@ -1613,7 +1613,7 @@
     "ledger_low": "Low",
     "ledger_resets_in": "Resets in {{duration}}",
     "ledger_ago": "{{duration}} ago",
-    "ledger_five_hour": "5-hour limit: {{percent}}% left",
+    "ledger_col_five_hour": "5-hour limit",
     "ledger_grant_account": "account",
     "ledger_grant_model": "model",
     "ledger_grant_expires": "Expires in {{duration}}",
